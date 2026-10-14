@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- SQL SCHEMA (run in Supabase SQL editor) ----
+create table contact_submissions (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  message text not null,
+  created_at timestamptz default now()
+);
+alter table contact_submissions enable row level security;
+create policy "allow insert" on contact_submissions
+  for insert to anon with check (true);
+----------------------------------------------------- */
+
+:root {
+  --terminal: #00ff88;
+  --cyber: #00e5ff;
+  --alert: #ff2d4d;
+}
+
+html, body {
+  background: #030504;
+  overflow-x: hidden;
+}
+
+body {
+  cursor: crosshair;
+}
+
+/* layered CRT / scanline overlay */
+.crt::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 255, 136, 0.03) 0px,
+    rgba(0, 255, 136, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: screen;
+}
+
+.crt::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 91;
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+}
+
+/* neon border utility */
+.neon-frame {
+  position: relative;
+  background: rgba(4, 12, 9, 0.82);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 255, 136, 0.25);
+  box-shadow:
+    0 0 20px rgba(0, 255, 136, 0.08),
+    inset 0 0 30px rgba(0, 255, 136, 0.04);
+}
+.neon-frame::before,
+.neon-frame::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: var(--terminal);
+  border-style: solid;
+}
+.neon-frame::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.neon-frame::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+.neon-frame-cyan { border-color: rgba(0, 229, 255, 0.3); }
+.neon-frame-cyan::before, .neon-frame-cyan::after { border-color: var(--cyber); }
+
+.neon-frame-red { border-color: rgba(255, 45, 77, 0.35); }
+.neon-frame-red::before, .neon-frame-red::after { border-color: var(--alert); }
+
+/* glitch text */
+.glitch { position: relative; display: inline-block; }
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0.8;
+}
+.glitch::before { color: var(--cyber); animation: glitch-a 3s infinite linear alternate; }
+.glitch::after { color: var(--alert); animation: glitch-b 2.4s infinite linear alternate; }
+@keyframes glitch-a {
+  0%,92% { transform: translate(0,0); clip-path: inset(0 0 0 0); }
+  93% { transform: translate(-3px,1px); clip-path: inset(10% 0 60% 0); }
+  96% { transform: translate(3px,-1px); clip-path: inset(50% 0 20% 0); }
+}
+@keyframes glitch-b {
+  0%,90% { transform: translate(0,0); clip-path: inset(0 0 0 0); }
+  91% { transform: translate(3px,1px); clip-path: inset(60% 0 5% 0); }
+  95% { transform: translate(-2px,-1px); clip-path: inset(20% 0 55% 0); }
+}
+
+/* code rain background */
+.code-rain {
+  background-image: linear-gradient(rgba(0,255,136,0.15) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0,255,136,0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+/* glowing button */
+.cmd-btn {
+  position: relative;
+  transition: all .25s;
+}
+.cmd-btn:hover {
+  box-shadow: 0 0 24px rgba(0,255,136,0.5), inset 0 0 12px rgba(0,255,136,0.15);
+  text-shadow: 0 0 8px rgba(0,255,136,0.9);
+}
+
+/* scan beam on hover */
+.scan-beam { position: relative; overflow: hidden; }
+.scan-beam .beam {
+  position: absolute; left: 0; right: 0; height: 2px; top: 0;
+  background: linear-gradient(90deg, transparent, var(--cyber), transparent);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.group:hover .beam { opacity: 1; animation: beam-travel 1.6s linear infinite; }
+@keyframes beam-travel { 0% { top: 0; } 100% { top: 100%; } }
+
+::selection { background: var(--terminal); color: #000; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #030504; }
+::-webkit-scrollbar-thumb { background: rgba(0,255,136,0.3); }
